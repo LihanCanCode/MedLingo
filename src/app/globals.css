@@ -1,26 +1,87 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --cream: #f6f4ec;
+  --cream-100: #efece0;
+  --card: #ffffff;
+  --ink: #262220;
+  --ink-muted: #756c5e;
+  --border: #e5e0d3;
+
+  --accent: #c2673f;
+  --accent-hover: #a8552f;
+  --accent-soft: #f2e3d8;
+
+  --success: #4f7a5b;
+  --success-bg: #eaf1ea;
+  --success-border: #cfe0d1;
+
+  --warning: #a8722c;
+  --warning-bg: #fbf1df;
+  --warning-border: #eddbb0;
+
+  --critical: #b0452f;
+  --critical-bg: #fbeae4;
+  --critical-border: #f0cbbd;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-cream: var(--cream);
+  --color-cream-100: var(--cream-100);
+  --color-card: var(--card);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-border: var(--border);
+
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-soft: var(--accent-soft);
+
+  --color-success: var(--success);
+  --color-success-bg: var(--success-bg);
+  --color-success-border: var(--success-border);
+
+  --color-warning: var(--warning);
+  --color-warning-bg: var(--warning-bg);
+  --color-warning-border: var(--warning-border);
+
+  --color-critical: var(--critical);
+  --color-critical-bg: var(--critical-bg);
+  --color-critical-border: var(--critical-border);
+
   --font-sans: var(--font-geist-sans);
+  --font-serif: var(--font-display);
   --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --cream: #1e1b18;
+    --cream-100: #26221e;
+    --card: #29241f;
+    --ink: #f1ede4;
+    --ink-muted: #b6ae9f;
+    --border: #3a342c;
+
+    --accent: #e08a5e;
+    --accent-hover: #ec9c72;
+    --accent-soft: #3a2a22;
+
+    --success: #86b393;
+    --success-bg: #22302a;
+    --success-border: #34483c;
+
+    --warning: #d8ae64;
+    --warning-bg: #332a1b;
+    --warning-border: #4a3c24;
+
+    --critical: #e08571;
+    --critical-bg: #3a241f;
+    --critical-border: #55332b;
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--cream);
+  color: var(--ink);
 }

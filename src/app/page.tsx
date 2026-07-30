@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type SVGProps } from "react";
 import { SUPPORTED_LANGUAGES, type AnalysisResult, type LanguageCode } from "@/lib/groq";
 import {
   clearHistory,
@@ -13,11 +13,11 @@ import {
 type Status = "idle" | "loading" | "error" | "done";
 
 const FLAG_STYLES: Record<string, string> = {
-  normal: "bg-emerald-50 text-emerald-700 border-emerald-200",
-  low: "bg-amber-50 text-amber-700 border-amber-200",
-  high: "bg-amber-50 text-amber-700 border-amber-200",
-  critical: "bg-red-50 text-red-700 border-red-200",
-  unknown: "bg-slate-50 text-slate-600 border-slate-200",
+  normal: "bg-success-bg text-success border-success-border",
+  low: "bg-warning-bg text-warning border-warning-border",
+  high: "bg-warning-bg text-warning border-warning-border",
+  critical: "bg-critical-bg text-critical border-critical-border",
+  unknown: "bg-cream-100 text-ink-muted border-border",
 };
 
 function formatTimestamp(ts: number) {
@@ -28,6 +28,63 @@ function formatTimestamp(ts: number) {
     minute: "2-digit",
   });
 }
+
+function Icon({ children, ...props }: SVGProps<SVGSVGElement> & { children: React.ReactNode }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.6}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      {children}
+    </svg>
+  );
+}
+
+const IconUpload = (props: SVGProps<SVGSVGElement>) => (
+  <Icon {...props}>
+    <path d="M12 15.5V6M12 6l-3.5 3.5M12 6l3.5 3.5" />
+    <path d="M6 15.5v2A2.5 2.5 0 008.5 20h7a2.5 2.5 0 002.5-2.5v-2" />
+  </Icon>
+);
+
+const IconSpeaker = (props: SVGProps<SVGSVGElement>) => (
+  <Icon {...props}>
+    <path d="M4 9.5h3l4.5-4v13l-4.5-4H4v-5z" />
+    <path d="M16.5 8.5a4.5 4.5 0 010 7M19 6a8 8 0 010 12" />
+  </Icon>
+);
+
+const IconStop = (props: SVGProps<SVGSVGElement>) => (
+  <Icon {...props}>
+    <rect x="6" y="6" width="12" height="12" rx="2" />
+  </Icon>
+);
+
+const IconClock = (props: SVGProps<SVGSVGElement>) => (
+  <Icon {...props}>
+    <circle cx="12" cy="12" r="8.5" />
+    <path d="M12 8v4.2l3 1.8" />
+  </Icon>
+);
+
+const IconClose = (props: SVGProps<SVGSVGElement>) => (
+  <Icon {...props}>
+    <path d="M6 6l12 12M6 18L18 6" />
+  </Icon>
+);
+
+const IconAlert = (props: SVGProps<SVGSVGElement>) => (
+  <Icon {...props}>
+    <path d="M12 9v4" />
+    <path d="M10.4 4.1L2.9 17.3a1.6 1.6 0 001.4 2.4h15.4a1.6 1.6 0 001.4-2.4L13.6 4.1a1.6 1.6 0 00-2.8 0z" />
+    <path d="M12 16.2h.01" />
+  </Icon>
+);
 
 export default function Home() {
   const [file, setFile] = useState<File | null>(null);
@@ -142,43 +199,60 @@ export default function Home() {
   const showResultLoading = status === "loading";
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
-      <header className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-3xl items-start justify-between gap-4 px-4 py-6 sm:px-6">
+    <div className="min-h-screen bg-cream text-ink">
+      <header className="border-b border-border">
+        <div className="mx-auto flex max-w-2xl items-start justify-between gap-4 px-5 py-8 sm:px-6">
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight">MedLingo</h1>
-            <p className="mt-1 text-sm text-slate-500">
-              Upload a prescription or lab report photo — get a plain-language explanation
-              in your language. Free, private, not a diagnosis.
+            <div className="flex items-center gap-2.5">
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-accent text-cream">
+                <svg viewBox="0 0 24 24" className="h-4.5 w-4.5">
+                  <rect
+                    x="3"
+                    y="9.5"
+                    width="18"
+                    height="5"
+                    rx="2.5"
+                    transform="rotate(-45 12 12)"
+                    fill="currentColor"
+                  />
+                  <path d="M9.5 9.5l5 5" stroke="var(--accent)" strokeWidth="1.4" />
+                </svg>
+              </span>
+              <h1 className="font-serif text-2xl font-semibold tracking-tight">MedLingo</h1>
+            </div>
+            <p className="mt-2 max-w-sm text-sm leading-relaxed text-ink-muted">
+              Upload a prescription or lab report photo — get a plain-language
+              explanation in your language. Free, private, not a diagnosis.
             </p>
           </div>
           <button
             onClick={() => setShowHistory((v) => !v)}
-            className="shrink-0 rounded-lg border border-slate-300 px-3 py-2 text-xs font-medium text-slate-600 transition hover:bg-slate-100"
+            className="flex shrink-0 items-center gap-1.5 rounded-full border border-border bg-card px-3.5 py-2 text-xs font-medium text-ink-muted transition hover:border-accent hover:text-accent"
             aria-expanded={showHistory}
           >
-            🕘 History{history.length > 0 ? ` (${history.length})` : ""}
+            <IconClock className="h-3.5 w-3.5" />
+            History{history.length > 0 ? ` (${history.length})` : ""}
           </button>
         </div>
 
         {showHistory && (
-          <div className="border-t border-slate-200 bg-slate-50">
-            <div className="mx-auto max-w-3xl px-4 py-4 sm:px-6">
+          <div className="border-t border-border bg-cream-100">
+            <div className="mx-auto max-w-2xl px-5 py-4 sm:px-6">
               <div className="flex items-center justify-between">
-                <p className="text-xs font-medium text-slate-500">
+                <p className="text-xs text-ink-muted">
                   Saved on this device only — never uploaded anywhere.
                 </p>
                 {history.length > 0 && (
                   <button
                     onClick={handleClearHistory}
-                    className="text-xs font-medium text-slate-400 underline hover:text-slate-600"
+                    className="text-xs font-medium text-ink-muted underline decoration-border underline-offset-2 hover:text-accent"
                   >
                     Clear all
                   </button>
                 )}
               </div>
               {history.length === 0 ? (
-                <p className="mt-3 text-sm text-slate-400">
+                <p className="mt-3 text-sm text-ink-muted">
                   No documents explained yet on this device.
                 </p>
               ) : (
@@ -186,16 +260,16 @@ export default function Home() {
                   {history.map((entry) => (
                     <li
                       key={entry.id}
-                      className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white px-3 py-2"
+                      className="flex items-center justify-between gap-3 rounded-xl border border-border bg-card px-3.5 py-2.5"
                     >
                       <button
                         onClick={() => loadHistoryEntry(entry)}
                         className="min-w-0 flex-1 text-left"
                       >
-                        <p className="truncate text-sm font-medium text-slate-800">
+                        <p className="truncate text-sm font-medium text-ink">
                           {entry.result.documentType || "Document"}
                         </p>
-                        <p className="truncate text-xs text-slate-500">
+                        <p className="truncate text-xs text-ink-muted">
                           {formatTimestamp(entry.timestamp)}
                           {entry.result.redFlags.length > 0 &&
                             ` · ${entry.result.redFlags.length} flag${entry.result.redFlags.length > 1 ? "s" : ""}`}
@@ -204,9 +278,9 @@ export default function Home() {
                       <button
                         onClick={() => handleDeleteHistoryEntry(entry.id)}
                         aria-label="Delete this entry"
-                        className="shrink-0 rounded-md px-2 py-1 text-xs text-slate-400 hover:bg-red-50 hover:text-red-600"
+                        className="shrink-0 rounded-full p-1.5 text-ink-muted hover:bg-critical-bg hover:text-critical"
                       >
-                        ✕
+                        <IconClose className="h-3.5 w-3.5" />
                       </button>
                     </li>
                   ))}
@@ -217,30 +291,26 @@ export default function Home() {
         )}
       </header>
 
-      <main className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
+      <main className="mx-auto max-w-2xl px-5 py-8 sm:px-6">
         {/* Upload card */}
-        <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <label className="mb-1 block text-sm font-medium text-slate-700">
-                Explain in
-              </label>
-              <select
-                value={language}
-                onChange={(e) => setLanguage(e.target.value as LanguageCode)}
-                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:border-slate-500 focus:outline-none sm:w-52"
-              >
-                {SUPPORTED_LANGUAGES.map((l) => (
-                  <option key={l.code} value={l.code}>
-                    {l.label}
-                  </option>
-                ))}
-              </select>
-            </div>
+        <section className="rounded-3xl border border-border bg-card p-5 shadow-[0_1px_2px_rgba(38,34,32,0.04)] sm:p-7">
+          <div>
+            <label className="mb-1.5 block text-sm font-medium text-ink">Explain in</label>
+            <select
+              value={language}
+              onChange={(e) => setLanguage(e.target.value as LanguageCode)}
+              className="w-full rounded-xl border border-border bg-cream px-3.5 py-2.5 text-sm text-ink focus:border-accent focus:outline-none sm:w-56"
+            >
+              {SUPPORTED_LANGUAGES.map((l) => (
+                <option key={l.code} value={l.code}>
+                  {l.label}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div
-            className="mt-4 flex min-h-[180px] cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 p-4 text-center transition hover:border-slate-400 sm:p-6"
+            className="mt-5 flex min-h-[190px] cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-border bg-cream p-5 text-center transition hover:border-accent hover:bg-accent-soft/40 sm:p-6"
             onClick={() => fileInputRef.current?.click()}
             onDragOver={(e) => e.preventDefault()}
             onDrop={(e) => {
@@ -253,16 +323,19 @@ export default function Home() {
               <img
                 src={previewUrl}
                 alt="Uploaded document preview"
-                className="max-h-56 rounded-lg object-contain"
+                className="max-h-56 rounded-xl object-contain shadow-sm"
               />
             ) : file ? (
-              <p className="max-w-full truncate text-sm text-slate-600">📄 {file.name}</p>
+              <p className="max-w-full truncate text-sm text-ink-muted">{file.name}</p>
             ) : (
               <>
-                <p className="text-sm font-medium text-slate-600">
+                <span className="flex h-11 w-11 items-center justify-center rounded-full bg-accent-soft text-accent">
+                  <IconUpload className="h-5 w-5" />
+                </span>
+                <p className="mt-3 text-sm font-medium text-ink">
                   Drop a photo here, or tap to choose a file
                 </p>
-                <p className="mt-1 text-xs text-slate-400">
+                <p className="mt-1 text-xs text-ink-muted">
                   JPG, PNG, or WEBP — up to 15MB
                 </p>
               </>
@@ -276,18 +349,18 @@ export default function Home() {
             />
           </div>
 
-          <div className="mt-4 flex flex-wrap gap-3">
+          <div className="mt-5 flex flex-wrap gap-3">
             <button
               onClick={handleAnalyze}
               disabled={!file || status === "loading"}
-              className="flex-1 rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-40 sm:flex-none"
+              className="flex-1 rounded-full bg-accent px-5 py-3 text-sm font-medium text-cream shadow-sm transition hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-40 sm:flex-none"
             >
               {status === "loading" ? "Analyzing…" : "Explain this document"}
             </button>
             {(file || result) && (
               <button
                 onClick={reset}
-                className="rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-100"
+                className="rounded-full border border-border px-5 py-3 text-sm font-medium text-ink-muted transition hover:border-accent hover:text-accent"
               >
                 Clear
               </button>
@@ -295,7 +368,7 @@ export default function Home() {
           </div>
 
           {error && (
-            <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+            <p className="mt-4 rounded-xl border border-critical-border bg-critical-bg px-3.5 py-2.5 text-sm text-critical">
               {error}
             </p>
           )}
@@ -304,12 +377,12 @@ export default function Home() {
         {/* Loading skeleton */}
         {showResultLoading && (
           <section className="mt-6 animate-pulse space-y-4" aria-live="polite">
-            <div className="h-28 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-              <div className="h-3 w-24 rounded bg-slate-200" />
-              <div className="mt-4 h-3 w-full rounded bg-slate-100" />
-              <div className="mt-2 h-3 w-5/6 rounded bg-slate-100" />
+            <div className="h-28 rounded-3xl border border-border bg-card p-6 shadow-sm">
+              <div className="h-3 w-24 rounded-full bg-cream-100" />
+              <div className="mt-4 h-3 w-full rounded-full bg-cream-100" />
+              <div className="mt-2 h-3 w-5/6 rounded-full bg-cream-100" />
             </div>
-            <p className="text-center text-xs text-slate-400">
+            <p className="text-center text-xs text-ink-muted">
               Reading the document and translating to plain language…
             </p>
           </section>
@@ -319,58 +392,69 @@ export default function Home() {
         {result && !showResultLoading && (
           <section className="mt-6 space-y-5">
             {activeHistoryEntry && (
-              <div className="rounded-lg bg-slate-100 px-3 py-2 text-xs text-slate-500">
+              <div className="rounded-xl bg-cream-100 px-3.5 py-2.5 text-xs text-ink-muted">
                 Viewing a saved result from {formatTimestamp(activeHistoryEntry.timestamp)}
               </div>
             )}
 
-            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+            <div className="rounded-3xl border border-border bg-card p-5 shadow-sm sm:p-7">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <span className="inline-block rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">
+                  <span className="inline-block rounded-full bg-accent-soft px-3 py-1 text-xs font-medium text-accent">
                     {result.documentType}
                   </span>
-                  <h2 className="mt-3 text-lg font-semibold">Plain-language summary</h2>
+                  <h2 className="mt-3 font-serif text-xl font-semibold">
+                    Plain-language summary
+                  </h2>
                 </div>
                 <button
                   onClick={() =>
                     speaking ? stopSpeaking() : speak(result.summary, activeLanguage)
                   }
                   aria-label={speaking ? "Stop reading aloud" : "Read summary aloud"}
-                  className="shrink-0 rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-100"
+                  className="flex shrink-0 items-center gap-1.5 rounded-full border border-border px-3.5 py-2 text-xs font-medium text-ink-muted transition hover:border-accent hover:text-accent"
                 >
-                  {speaking ? "⏹ Stop" : "🔊 Listen"}
+                  {speaking ? (
+                    <IconStop className="h-3.5 w-3.5" />
+                  ) : (
+                    <IconSpeaker className="h-3.5 w-3.5" />
+                  )}
+                  {speaking ? "Stop" : "Listen"}
                 </button>
               </div>
-              <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-slate-700">
+              <p className="mt-3 whitespace-pre-line text-[15px] leading-relaxed text-ink/90">
                 {result.summary}
               </p>
             </div>
 
             {result.redFlags.length > 0 && (
-              <div className="rounded-2xl border border-red-200 bg-red-50 p-4 sm:p-6">
-                <h2 className="text-sm font-semibold text-red-800">
-                  ⚠ Worth asking your doctor about
+              <div className="rounded-3xl border border-critical-border bg-critical-bg p-5 sm:p-7">
+                <h2 className="flex items-center gap-2 text-sm font-semibold text-critical">
+                  <IconAlert className="h-4 w-4" />
+                  Worth asking your doctor about
                 </h2>
-                <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-red-700">
+                <ul className="mt-3 space-y-2">
                   {result.redFlags.map((flag, i) => (
-                    <li key={i}>{flag}</li>
+                    <li key={i} className="flex gap-2 text-sm leading-relaxed text-critical/90">
+                      <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-critical" />
+                      {flag}
+                    </li>
                   ))}
                 </ul>
               </div>
             )}
 
             {result.medicines.length > 0 && (
-              <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
-                <h2 className="text-lg font-semibold">Medicines</h2>
-                <div className="mt-3 space-y-3">
+              <div className="rounded-3xl border border-border bg-card p-5 shadow-sm sm:p-7">
+                <h2 className="font-serif text-lg font-semibold">Medicines</h2>
+                <div className="mt-4 space-y-3">
                   {result.medicines.map((med, i) => (
-                    <div key={i} className="rounded-xl border border-slate-100 bg-slate-50 p-3">
-                      <p className="font-medium text-slate-800">{med.name}</p>
+                    <div key={i} className="rounded-2xl border border-border bg-cream p-4">
+                      <p className="font-medium text-ink">{med.name}</p>
                       {med.purpose && (
-                        <p className="mt-1 text-sm text-slate-600">{med.purpose}</p>
+                        <p className="mt-1 text-sm text-ink/80">{med.purpose}</p>
                       )}
-                      <p className="mt-1 text-xs text-slate-500">{med.dosageInstructions}</p>
+                      <p className="mt-1.5 text-xs text-ink-muted">{med.dosageInstructions}</p>
                     </div>
                   ))}
                 </div>
@@ -378,25 +462,25 @@ export default function Home() {
             )}
 
             {result.labResults.length > 0 && (
-              <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
-                <h2 className="text-lg font-semibold">Lab results</h2>
-                <div className="mt-3 space-y-3">
+              <div className="rounded-3xl border border-border bg-card p-5 shadow-sm sm:p-7">
+                <h2 className="font-serif text-lg font-semibold">Lab results</h2>
+                <div className="mt-4 space-y-3">
                   {result.labResults.map((lab, i) => (
                     <div
                       key={i}
-                      className={`rounded-xl border p-3 ${FLAG_STYLES[lab.flag] ?? FLAG_STYLES.unknown}`}
+                      className={`rounded-2xl border p-4 ${FLAG_STYLES[lab.flag] ?? FLAG_STYLES.unknown}`}
                     >
                       <div className="flex items-center justify-between gap-3">
                         <p className="font-medium">{lab.test}</p>
-                        <span className="text-xs font-semibold uppercase tracking-wide">
+                        <span className="rounded-full bg-white/50 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide">
                           {lab.flag}
                         </span>
                       </div>
-                      <p className="mt-1 text-sm">
+                      <p className="mt-1.5 text-sm">
                         {lab.value}{" "}
                         <span className="opacity-70">(ref: {lab.referenceRange})</span>
                       </p>
-                      <p className="mt-1 text-sm opacity-90">{lab.plainMeaning}</p>
+                      <p className="mt-1.5 text-sm opacity-90">{lab.plainMeaning}</p>
                     </div>
                   ))}
                 </div>
@@ -406,14 +490,14 @@ export default function Home() {
             {result.medicines.length === 0 &&
               result.labResults.length === 0 &&
               result.redFlags.length === 0 && (
-                <p className="rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-500 sm:p-6">
+                <p className="rounded-3xl border border-border bg-card p-5 text-sm text-ink-muted sm:p-7">
                   We couldn&apos;t confidently read specific medicines or lab values from
                   this photo. Try a clearer, well-lit photo with the full document in
                   frame.
                 </p>
               )}
 
-            <p className="text-center text-xs text-slate-400">
+            <p className="text-center text-xs leading-relaxed text-ink-muted">
               MedLingo explains documents in plain language — it does not diagnose or
               replace professional medical advice. Always confirm with a doctor or
               pharmacist.
@@ -422,7 +506,7 @@ export default function Home() {
         )}
       </main>
 
-      <footer className="mx-auto max-w-3xl px-4 pb-8 text-center text-xs text-slate-300 sm:px-6">
+      <footer className="mx-auto max-w-2xl px-5 pb-10 text-center text-xs text-ink-muted/60 sm:px-6">
         Built for Next Byte Hacks V3 · Powered by Groq
       </footer>
     </div>
